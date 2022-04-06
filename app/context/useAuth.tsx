@@ -31,6 +31,7 @@ const AuthContext = createContext<Context>({} as Context);
 export const AuthProvider = (props: ContextProps) => {
     const [user, setUser] = useState<User | null>(props.user);
 
+    /*
     useEffect(() => {
         if (!user) {
             const subscribe = onAuthStateChanged(auth, async (authUser) => {
@@ -55,6 +56,7 @@ export const AuthProvider = (props: ContextProps) => {
             return () => subscribe()
         }
     }, [user])
+    */
 
     const memoizedValue = useMemo(() => ({
         user

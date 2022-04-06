@@ -1,6 +1,6 @@
 import { GoogleAuthProvider, signInWithPopup, AuthProvider } from 'firebase/auth';
 import useAuth from '../context/useAuth';
-import { auth } from '../lib/firebase';
+import { auth } from '../lib/firebase/firebase';
 
 export default function Index() {
   const { user } = useAuth();

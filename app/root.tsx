@@ -25,6 +25,7 @@ export const meta: MetaFunction = () => ({
 export async function loader({ request }: any) {
   const cookieHeader = request.headers.get("Cookie");
 
+  /*
   const response = await fetch('https://127.0.0.1:5000/auth/verify', {
     headers: {
       Cookie: cookieHeader,
@@ -34,6 +35,9 @@ export async function loader({ request }: any) {
     credentials: 'include'
   });
   const result = await response.json()
+  */
+
+  const result = {status: false, data: null};
 
   return result.status ? json({ user: result.data }) : json({ user: null })
 }
