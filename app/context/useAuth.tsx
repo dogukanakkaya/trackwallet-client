@@ -1,5 +1,5 @@
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../lib/firebase';
+import { auth } from '../lib/firebase/firebase';
 import {
     createContext,
     ReactNode,
@@ -31,14 +31,14 @@ const AuthContext = createContext<Context>({} as Context);
 export const AuthProvider = (props: ContextProps) => {
     const [user, setUser] = useState<User | null>(props.user);
 
-    /*
     useEffect(() => {
         if (!user) {
             const subscribe = onAuthStateChanged(auth, async (authUser) => {
+                console.log(authUser);
                 if (authUser) {
                     const token = await authUser.getIdToken();
 
-                    const response = await fetch('https://127.0.0.1:5000/auth/login', {
+                    const response = await fetch('https://127.0.0.1:3000/auth/login', {
                         method: 'POST',
                         body: JSON.stringify({ token }),
                         headers: {
@@ -56,7 +56,6 @@ export const AuthProvider = (props: ContextProps) => {
             return () => subscribe()
         }
     }, [user])
-    */
 
     const memoizedValue = useMemo(() => ({
         user

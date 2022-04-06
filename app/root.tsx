@@ -6,11 +6,14 @@ import {
   Scripts,
   ScrollRestoration,
   json,
-  useLoaderData
+  useLoaderData,
+  LoaderFunction
 } from "remix";
 import type { MetaFunction, LinksFunction } from "remix";
 import styles from "./styles/tailwind.css"
 import { AuthProvider } from "./context/useAuth";
+import { auth as authCookie } from './lib/cookie';
+import { auth } from './lib/firebase/firebase.server';
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
@@ -22,24 +25,13 @@ export const meta: MetaFunction = () => ({
   viewport: "width=device-width,initial-scale=1",
 });
 
-export async function loader({ request }: any) {
+export const loader: LoaderFunction = async ({ request }) => {
   const cookieHeader = request.headers.get("Cookie");
+  const cookies = await authCookie.parse(cookieHeader) || {};
 
-  /*
-  const response = await fetch('https://127.0.0.1:5000/auth/verify', {
-    headers: {
-      Cookie: cookieHeader,
-      Accept: 'application/json',
-      'Content-Type': 'application/json'
-    },
-    credentials: 'include'
-  });
-  const result = await response.json()
-  */
+  const user = await auth.verifySessionCookie(cookies.token, true);
 
-  const result = {status: false, data: null};
-
-  return result.status ? json({ user: result.data }) : json({ user: null })
+  return json({ user })
 }
 
 export default function App() {
