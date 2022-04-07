@@ -1,4 +1,5 @@
 import { GoogleAuthProvider, signInWithPopup, AuthProvider } from 'firebase/auth';
+import { Assets } from '../components/assets/assets';
 import useAuth from '../context/useAuth';
 import { auth } from '../lib/firebase/firebase';
 
@@ -17,7 +18,7 @@ export default function Index() {
     <div>
       <header className='shadow'>
         <div className='container flex items-center justify-between h-20'>
-          <h1 className='text-3xl flex items-center font-semibold text-white'>Logo</h1>
+          <h1 className='text-4xl flex items-center font-semibold text-white'>Logo</h1>
           <ul>
             {
               !user
@@ -32,8 +33,9 @@ export default function Index() {
         </div>
       </header>
 
-      <main>
-
+      <main className='container mt-10'>
+        <h1 className='text-2xl font-semibold mb-5'>Assets</h1>
+        <Assets />
       </main>
     </div>
   );
