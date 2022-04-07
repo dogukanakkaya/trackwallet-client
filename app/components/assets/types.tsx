@@ -7,5 +7,5 @@ export interface Asset {
     id: string;
     name: string;
     nativeCurrency: string;
-    wallets: Wallet[];
+    wallets?: Wallet[];
 }

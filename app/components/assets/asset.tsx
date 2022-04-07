@@ -1,4 +1,3 @@
-import React from 'react'
 import { Asset as AssetType } from './types';
 
 export const Asset = ({ asset, activeAccordions, handleAccordionActivation }: Props) => {
@@ -8,12 +7,12 @@ export const Asset = ({ asset, activeAccordions, handleAccordionActivation }: Pr
                 className='px-4 py-2 mb-2 flex justify-between items-center shadow rounded border transition duration-300 ease-in-out cursor-pointer border-gray-800'
                 onClick={() => handleAccordionActivation(asset.id)}
             >
-                <span>{asset.name}</span> <span><i className='bi bi-chevron-down'></i></span>
+                <span>{asset.name} {asset.name !== asset.nativeCurrency ? `(${asset.nativeCurrency})` : null}</span> <span><i className='bi bi-chevron-down'></i></span>
             </div>
             <div className={`flex flex-col justify-center overflow-hidden transition-[max-height] ease-in-out duration-300 ${!activeAccordions.includes(asset.id) ? 'max-h-0' : 'max-h-80'}`}>
                 <div className='m-4'>
                     {
-                        asset.wallets.map(wallet => <>{wallet.id}</>)
+                        asset.wallets ? asset.wallets.map(wallet => <span key={wallet.id}>{wallet.address}</span>) : null
                     }
                 </div>
             </div>
