@@ -29,9 +29,15 @@ export const loader: LoaderFunction = async ({ request }) => {
   const cookieHeader = request.headers.get("Cookie");
   const cookies = await authCookie.parse(cookieHeader) || {};
 
-  const user = await auth.verifySessionCookie(cookies.token, true);
+  let user = null;
 
-  return json({ user })
+  try {
+    user = await auth.verifySessionCookie(cookies.token, true);
+  } catch (err) {
+    // cookie expired or any other error
+  }
+
+  return json({ user });
 }
 
 export default function App() {

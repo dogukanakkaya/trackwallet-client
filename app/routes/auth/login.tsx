@@ -11,7 +11,8 @@ export const action: ActionFunction = async ({ request }) => {
     const user = await auth.verifySessionCookie(sessionCokie, true);
 
     return json({
-        user
+        status: true,
+        data: user
     }, {
         headers: {
             'Set-Cookie': await authCookie.serialize({ token: sessionCokie })

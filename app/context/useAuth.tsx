@@ -34,7 +34,6 @@ export const AuthProvider = (props: ContextProps) => {
     useEffect(() => {
         if (!user) {
             const subscribe = onAuthStateChanged(auth, async (authUser) => {
-                console.log(authUser);
                 if (authUser) {
                     const token = await authUser.getIdToken();
 
