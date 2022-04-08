@@ -1,6 +1,6 @@
 import { ActionFunction, json } from 'remix';
-import { auth } from '../../lib/firebase/firebase.server';
-import { auth as authCookie } from '../../lib/cookie';
+import { auth } from '../../../lib/firebase/firebase.server';
+import { auth as authCookie } from '../../../lib/cookie';
 
 export const action: ActionFunction = async ({ request }) => {
     const { token } = await request.json();

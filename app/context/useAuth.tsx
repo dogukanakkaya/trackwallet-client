@@ -8,6 +8,7 @@ import {
     useMemo,
     useState,
 } from 'react';
+import { request } from '../lib/axios';
 
 export interface User {
     name: string;
@@ -37,18 +38,13 @@ export const AuthProvider = (props: ContextProps) => {
                 if (authUser) {
                     const token = await authUser.getIdToken();
 
-                    const response = await fetch('https://127.0.0.1:3000/auth/login', {
-                        method: 'POST',
-                        body: JSON.stringify({ token }),
-                        headers: {
-                            Accept: 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        credentials: 'include'
+                    const { data } = await request.post('https://127.0.0.1:3000/api/auth/login', {
+                        token
+                    }, {
+                        withCredentials: true
                     });
-                    const result = await response.json();
 
-                    setUser(result.status ? result.data : null);
+                    setUser(data.status ? data.data : null);
                 }
             });
 
