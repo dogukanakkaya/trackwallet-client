@@ -8,7 +8,7 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { request } from '../lib/axios';
+import { request } from '../lib/request';
 
 export interface User {
     name: string;
