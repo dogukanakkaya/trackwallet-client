@@ -1,4 +1,5 @@
 import { Avalanche } from './avalanche';
+import { IOTA } from './iota';
 import { Solana } from './solana';
 
 export interface Driver {
@@ -7,5 +8,6 @@ export interface Driver {
 
 export const drivers: Record<string, Driver> = {
     'SOL': new Solana(),
-    'AVAX': new Avalanche()
+    'AVAX': new Avalanche(),
+    'IOTA': new IOTA()
 }
