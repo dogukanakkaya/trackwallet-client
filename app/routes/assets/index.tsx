@@ -45,8 +45,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function Assets() {
     const { assets } = useLoaderData();
-    console.log(assets);
-
 
     const [activeAccordions, setActiveAccordions] = useState<string[]>([]);
 

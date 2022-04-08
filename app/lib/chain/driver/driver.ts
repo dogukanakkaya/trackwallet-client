@@ -1,3 +1,4 @@
+import { Avalanche } from './avalanche';
 import { Solana } from './solana';
 
 export interface Driver {
@@ -5,5 +6,6 @@ export interface Driver {
 }
 
 export const drivers: Record<string, Driver> = {
-    'SOL': new Solana()
+    'SOL': new Solana(),
+    'AVAX': new Avalanche()
 }
