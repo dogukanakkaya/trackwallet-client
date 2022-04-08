@@ -3,17 +3,38 @@ import { json, LoaderFunction, useLoaderData } from 'remix';
 import { Asset } from '../../components/assets/asset';
 import { firestore } from '../../lib/firebase/firebase.server';
 import { Asset as AssetType } from '../../components/assets/types';
+import { drivers } from '../../lib/chain/driver/driver';
 
 export const loader: LoaderFunction = async ({ request }) => {
     const assets = await firestore.collection('assets').get();
 
-    const mappedAssets = assets.docs.map(async asset => {
-        const wallets = await asset.ref.collection('wallets').get();
+    const mappedAssets = assets.docs.map(async assetDoc => {
+        const asset = assetDoc.data();
+
+        const wallets = await assetDoc.ref.collection('wallets').get();
+
+        const mappedWallets = await Promise.all(
+            wallets.docs.map(async walletDoc => {
+                const wallet = walletDoc.data();
+
+                let balance = 0;
+
+                if (asset.nativeCurrency in drivers) {
+                    balance = await drivers[asset.nativeCurrency].getBalance(wallet.address);
+                }
+
+                return {
+                    id: walletDoc.id,
+                    ...wallet,
+                    balance
+                }
+            })
+        );
 
         return {
-            id: asset.id,
-            ...asset.data(),
-            wallets: wallets.docs.map(wallet => ({ id: wallet.id, ...wallet.data() }))
+            id: assetDoc.id,
+            ...asset,
+            wallets: mappedWallets
         };
     });
 
@@ -24,6 +45,8 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function Assets() {
     const { assets } = useLoaderData();
+    console.log(assets);
+
 
     const [activeAccordions, setActiveAccordions] = useState<string[]>([]);
 

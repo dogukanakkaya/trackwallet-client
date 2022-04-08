@@ -1,4 +1,5 @@
 import { Asset as AssetType } from './types';
+import { Wallet } from './wallet';
 
 export const Asset = ({ asset, activeAccordions, handleAccordionActivation }: Props) => {
     return (
@@ -12,7 +13,7 @@ export const Asset = ({ asset, activeAccordions, handleAccordionActivation }: Pr
             <div className={`flex flex-col justify-center overflow-hidden transition-[max-height] ease-in-out duration-300 ${!activeAccordions.includes(asset.id) ? 'max-h-0' : 'max-h-80'}`}>
                 <div className='m-4'>
                     {
-                        asset.wallets ? asset.wallets.map(wallet => <span key={wallet.id}>{wallet.address}</span>) : null
+                        asset.wallets ? asset.wallets.map(wallet => <Wallet key={wallet.id} wallet={wallet} />) : null
                     }
                 </div>
             </div>

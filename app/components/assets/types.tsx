@@ -1,6 +1,7 @@
 export interface Wallet {
     id: string;
     address: string;
+    balance: number;
 }
 
 export interface Asset {

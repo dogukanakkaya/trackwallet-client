@@ -1,7 +1,7 @@
 import { request } from '../../request';
 import { Driver } from './driver';
 
-export class Solana extends Driver {
+export class Solana implements Driver {
     readonly #url = 'https://api.mainnet-beta.solana.com';
 
     async getBalance(address: string): Promise<number> {
