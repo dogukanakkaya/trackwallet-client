@@ -2,7 +2,6 @@ import useAuth from '../context/useAuth'
 import { auth } from '../lib/firebase/firebase';
 import { GoogleAuthProvider, signInWithPopup, AuthProvider } from 'firebase/auth';
 
-
 const googleAuthentication = async () => {
     const provider = new GoogleAuthProvider();
 
