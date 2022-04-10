@@ -5,23 +5,15 @@ import { firestore } from '../../lib/firebase/firebase.server';
 import { Asset as AssetType } from '../../components/assets/types';
 import { drivers } from '../../lib/chain/driver/driver';
 import { Coinmarketcap, Listing } from '../../lib/chain/coinmarketcap.server';
-import { ALLOWED_CRYPTOCURRENCIES } from '../../config.server';
 import { client } from '../../lib/redis.server';
+import { withCache } from '../../lib/cache/helper';
 
 export const loader: LoaderFunction = async () => {
     const coinmarketcap = Coinmarketcap.getInstance();
 
     const assets = await firestore.collection('assets').get();
 
-    let cachedListings = await client.get('cryptocurrency_listings');
-    let listings: Listing[];
-
-    if (!cachedListings) {
-        listings = await coinmarketcap.getListings();
-        await client.set('cryptocurrency_listings', JSON.stringify(listings), { EX: 60 * 60 * 1 });
-    } else {
-        listings = JSON.parse(cachedListings);
-    }
+    const listings = await withCache<Listing[]>('cryptocurrency_listings', () => coinmarketcap.getListings(), { EX: 60 * 60 * 1 });
 
     const mappedAssets = assets.docs.map(async assetDoc => {
         const asset = assetDoc.data();
