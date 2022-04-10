@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from "express";
 import { createServer } from "https";
 import compression from "compression";

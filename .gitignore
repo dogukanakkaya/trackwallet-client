@@ -9,3 +9,4 @@ node_modules
 local_ssl
 
 serviceAccountKey.json
+*.rest
