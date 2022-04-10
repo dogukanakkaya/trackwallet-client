@@ -30,15 +30,21 @@ export const loader: LoaderFunction = async ({ request }) => {
   const cookieHeader = request.headers.get("Cookie");
   const cookies = await authCookie.parse(cookieHeader) || {};
 
-  let user = null;
-
   try {
-    user = await auth.verifySessionCookie(cookies.token, true);
-  } catch (err) {
-    // cookie expired or any other error
-  }
+    const user = await auth.verifySessionCookie(cookies.token, true);
 
-  return json({ user });
+    return json({ user });
+  } catch (err) {
+    // cookie expired or any other error (reset the cookie)
+    // todo: later i might need to delete only auth cookie and keep others
+    return json({
+      user: null
+    }, {
+      headers: {
+        'Set-Cookie': ''
+      }
+    })
+  }
 }
 
 export default function App() {
