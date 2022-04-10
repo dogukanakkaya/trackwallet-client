@@ -1,6 +1,7 @@
 import useAuth from '../context/useAuth'
 import { auth } from '../lib/firebase/firebase';
 import { GoogleAuthProvider, signInWithPopup, AuthProvider } from 'firebase/auth';
+import logo from '../logo.png';
 
 const googleAuthentication = async () => {
     const provider = new GoogleAuthProvider();
@@ -15,7 +16,7 @@ export const Header = () => {
     return (
         <header className='shadow'>
             <div className='container flex items-center justify-between h-20'>
-                <h1 className='text-4xl flex items-center font-semibold text-white'>Logo</h1>
+                <div className='flex items-center'><img className='w-16' src={logo} alt="" /></div>
                 <ul>
                     {
                         !user

@@ -13,6 +13,7 @@ export const action: ActionFunction = async ({ request }) => {
 
         const usersRef = firestore.collection('users');
 
+        // check the user exists and create new if not
         const userByEmail = await usersRef.where('email', '==', user.email).get();
 
         if (userByEmail.size === 0) {

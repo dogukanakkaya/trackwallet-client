@@ -3,6 +3,7 @@ import { IOTA } from './iota';
 import { Polkadot } from './polkadot';
 import { Solana } from './solana';
 
+// todo: move drivers to another service (Node-Nest or Deno)
 export interface Driver {
     getBalance: (address: string) => Promise<number>;
 }
