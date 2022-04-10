@@ -4,9 +4,24 @@ import { Asset } from '../../components/assets/asset';
 import { firestore } from '../../lib/firebase/firebase.server';
 import { Asset as AssetType } from '../../components/assets/types';
 import { drivers } from '../../lib/chain/driver/driver';
+import { Coinmarketcap, Listing } from '../../lib/chain/coinmarketcap.server';
+import { ALLOWED_CRYPTOCURRENCIES } from '../../config.server';
+import { client } from '../../lib/redis.server';
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader: LoaderFunction = async () => {
+    const coinmarketcap = Coinmarketcap.getInstance();
+
     const assets = await firestore.collection('assets').get();
+
+    let cachedListings = await client.get('cryptocurrency_listings');
+    let listings: Listing[];
+
+    if (!cachedListings) {
+        listings = await coinmarketcap.getListings();
+        await client.set('cryptocurrency_listings', JSON.stringify(listings), { EX: 60 * 60 * 1 });
+    } else {
+        listings = JSON.parse(cachedListings);
+    }
 
     const mappedAssets = assets.docs.map(async assetDoc => {
         const asset = assetDoc.data();
@@ -17,11 +32,13 @@ export const loader: LoaderFunction = async ({ request }) => {
             wallets.docs.map(async walletDoc => {
                 const wallet = walletDoc.data();
 
-                let balance = 0;
+                let balance: Record<string, number> = {};
 
                 if (asset.nativeCurrency in drivers) {
-                    balance = await drivers[asset.nativeCurrency].getBalance(wallet.address);
+                    balance[asset.nativeCurrency] = await drivers[asset.nativeCurrency].getBalance(wallet.address);
                 }
+
+                balance.USD = balance[asset.nativeCurrency] * (listings.find(listing => listing.symbol === asset.nativeCurrency)?.quote?.USD.price || 0);
 
                 return {
                     id: walletDoc.id,
@@ -37,6 +54,7 @@ export const loader: LoaderFunction = async ({ request }) => {
             wallets: mappedWallets
         };
     });
+
 
     return json({
         assets: await Promise.all(mappedAssets)

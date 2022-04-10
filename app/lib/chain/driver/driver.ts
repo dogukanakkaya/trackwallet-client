@@ -10,6 +10,6 @@ export interface Driver {
 export const drivers: Record<string, Driver> = {
     'SOL': new Solana(),
     'AVAX': new Avalanche(),
-    'IOTA': new IOTA(),
+    'MIOTA': new IOTA(),
     //'DOT': new Polkadot()
 }

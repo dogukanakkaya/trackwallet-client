@@ -1,7 +1,7 @@
 export interface Wallet {
     id: string;
     address: string;
-    balance: number;
+    balance: Record<string, number>;
 }
 
 export interface Asset {
