@@ -6,13 +6,16 @@ import { Asset as AssetType } from '../../components/assets/types';
 import { getDrivers } from '../../lib/chain/driver/driver';
 import { Coinmarketcap, Listing } from '../../lib/chain/coinmarketcap.server';
 import { withCache } from '../../lib/cache/helper';
+import { getUserFromRequest } from '../../lib/auth/user.server';
 
-export const loader: LoaderFunction = async () => {
+export const loader: LoaderFunction = async ({ request }) => {
+    const user = await getUserFromRequest(request);
+
     const drivers = await getDrivers();
 
     const coinmarketcap = Coinmarketcap.getInstance();
 
-    const assets = await firestore.collection('assets').get();
+    const assets = await firestore.collection(`users/${user.uid}/assets`).get();
 
     const listings = await withCache<Listing[]>('cryptocurrency_listings', () => coinmarketcap.getListings(), { EX: 60 * 60 * 1 });
 
@@ -31,9 +34,9 @@ export const loader: LoaderFunction = async () => {
 
                 let balance: Record<string, number> = {
                     // start each request in parallel for more perf
-                    [asset.nativeCurrency]: await drivers[asset.nativeCurrency]?.getBalance(wallet.address) || 0
+                    [asset.currency]: await drivers[asset.currency]?.getBalance(wallet.address) || 0
                 };
-                balance.USD = balance[asset.nativeCurrency] * (listings.find(listing => listing.symbol === asset.nativeCurrency)?.quote?.USD.price || 0)
+                balance.USD = balance[asset.currency] * (listings.find(listing => listing.symbol === asset.currency)?.quote?.USD.price || 0)
                 totalBalance.USD += balance.USD;
 
                 return {
@@ -50,7 +53,6 @@ export const loader: LoaderFunction = async () => {
             wallets: mappedWallets
         };
     });
-
 
     return json({
         assets: await Promise.all(mappedAssets),

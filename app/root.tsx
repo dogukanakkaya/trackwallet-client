@@ -12,9 +12,8 @@ import {
 import type { MetaFunction, LinksFunction } from "remix";
 import styles from "./styles/tailwind.css"
 import { AuthProvider } from "./context/useAuth";
-import { auth as authCookie } from './lib/cookie';
-import { auth } from './lib/firebase/firebase.server';
 import { Header } from './components/header';
+import { getUserFromRequest } from './lib/auth/user.server';
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
@@ -22,16 +21,13 @@ export const links: LinksFunction = () => [
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
-  title: "New Remix App",
+  title: "Web of Crypto",
   viewport: "width=device-width,initial-scale=1",
 });
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const cookieHeader = request.headers.get("Cookie");
-  const cookies = await authCookie.parse(cookieHeader) || {};
-
   try {
-    const user = await auth.verifySessionCookie(cookies.token, true);
+    const user = await getUserFromRequest(request);
 
     return json({ user });
   } catch (err) {
