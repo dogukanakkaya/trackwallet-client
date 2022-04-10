@@ -30,6 +30,7 @@ export const loader: LoaderFunction = async () => {
                 const wallet = walletDoc.data();
 
                 let balance: Record<string, number> = {
+                    // start each request in parallel for more perf
                     [asset.nativeCurrency]: await drivers[asset.nativeCurrency]?.getBalance(wallet.address) || 0
                 };
                 balance.USD = balance[asset.nativeCurrency] * (listings.find(listing => listing.symbol === asset.nativeCurrency)?.quote?.USD.price || 0)
