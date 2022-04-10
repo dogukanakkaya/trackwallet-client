@@ -16,6 +16,10 @@ export const loader: LoaderFunction = async () => {
 
     const listings = await withCache<Listing[]>('cryptocurrency_listings', () => coinmarketcap.getListings(), { EX: 60 * 60 * 1 });
 
+    let totalBalance: Record<string, number> = {
+        USD: 0
+    };
+
     const mappedAssets = assets.docs.map(async assetDoc => {
         const asset = assetDoc.data();
 
@@ -25,13 +29,11 @@ export const loader: LoaderFunction = async () => {
             wallets.docs.map(async walletDoc => {
                 const wallet = walletDoc.data();
 
-                let balance: Record<string, number> = {};
-
-                if (asset.nativeCurrency in drivers) {
-                    balance[asset.nativeCurrency] = await drivers[asset.nativeCurrency].getBalance(wallet.address);
-                }
-
-                balance.USD = balance[asset.nativeCurrency] * (listings.find(listing => listing.symbol === asset.nativeCurrency)?.quote?.USD.price || 0);
+                let balance: Record<string, number> = {
+                    [asset.nativeCurrency]: await drivers[asset.nativeCurrency]?.getBalance(wallet.address) || 0
+                };
+                balance.USD = balance[asset.nativeCurrency] * (listings.find(listing => listing.symbol === asset.nativeCurrency)?.quote?.USD.price || 0)
+                totalBalance.USD += balance.USD;
 
                 return {
                     id: walletDoc.id,
@@ -50,12 +52,13 @@ export const loader: LoaderFunction = async () => {
 
 
     return json({
-        assets: await Promise.all(mappedAssets)
+        assets: await Promise.all(mappedAssets),
+        totalBalance
     });
 }
 
 export default function Assets() {
-    const { assets } = useLoaderData();
+    const { assets, totalBalance } = useLoaderData();
 
     const [passiveAccordions, setPassiveAccordions] = useState<string[]>([]);
 
@@ -68,19 +71,22 @@ export default function Assets() {
     }
 
     return (
-        <div>
-            {
-                assets.map((asset: AssetType) => {
-                    return (
-                        <Asset
-                            key={asset.id}
-                            asset={asset}
-                            passiveAccordions={passiveAccordions}
-                            handleAccordionActivation={handleAccordionActivation}
-                        />
-                    )
-                })
-            }
-        </div>
+        <>
+            <h1 className='text-2xl font-semibold mb-5'>Assets (${totalBalance.USD.toFixed(2)})</h1>
+            <div>
+                {
+                    assets.map((asset: AssetType) => {
+                        return (
+                            <Asset
+                                key={asset.id}
+                                asset={asset}
+                                passiveAccordions={passiveAccordions}
+                                handleAccordionActivation={handleAccordionActivation}
+                            />
+                        )
+                    })
+                }
+            </div>
+        </>
     )
 }
