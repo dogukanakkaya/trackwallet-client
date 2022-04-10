@@ -7,9 +7,9 @@ export interface Driver {
     getBalance: (address: string) => Promise<number>;
 }
 
-export const drivers: Record<string, Driver> = {
+export const getDrivers = async (): Promise<Record<string, Driver>> => ({
     'SOL': new Solana(),
     'AVAX': new Avalanche(),
     'MIOTA': new IOTA(),
-    //'DOT': new Polkadot()
-}
+    'DOT': await Polkadot.getInstance()
+})

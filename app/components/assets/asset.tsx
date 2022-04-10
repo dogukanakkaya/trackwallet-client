@@ -1,7 +1,7 @@
 import { Asset as AssetType } from './types';
 import { Wallet } from './wallet';
 
-export const Asset = ({ asset, activeAccordions, handleAccordionActivation }: Props) => {
+export const Asset = ({ asset, passiveAccordions, handleAccordionActivation }: Props) => {
     return (
         <div className='mb-3 transition-colors hover:bg-zinc-900'>
             <div
@@ -10,7 +10,7 @@ export const Asset = ({ asset, activeAccordions, handleAccordionActivation }: Pr
             >
                 <span>{asset.name} {asset.name !== asset.nativeCurrency ? `(${asset.nativeCurrency})` : null}</span> <span><i className='bi bi-chevron-down'></i></span>
             </div>
-            <div className={`flex flex-col justify-center overflow-hidden transition-[max-height] ease-in-out duration-300 ${!activeAccordions.includes(asset.id) ? 'max-h-0' : 'max-h-80'}`}>
+            <div className={`flex flex-col justify-center overflow-hidden shadow-lg transition-[max-height] ease-in-out duration-300 ${passiveAccordions.includes(asset.id) ? 'max-h-0' : 'max-h-80'}`}>
                 <div className='m-4'>
                     {
                         asset.wallets ? asset.wallets.map(wallet => <Wallet key={wallet.id} asset={asset} wallet={wallet} />) : null
@@ -23,6 +23,6 @@ export const Asset = ({ asset, activeAccordions, handleAccordionActivation }: Pr
 
 interface Props {
     asset: AssetType;
-    activeAccordions: string[];
+    passiveAccordions: string[];
     handleAccordionActivation: (id: string) => void;
 }

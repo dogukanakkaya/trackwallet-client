@@ -1,19 +1,34 @@
+import { ApiPromise, HttpProvider } from '@polkadot/api';
 import { request } from '../../request';
 import { Driver } from './driver';
 
 export class Polkadot implements Driver {
-    readonly #url = 'https://rpc.polkadot.io'
+    static #instance: Polkadot | null = null;
+
+    private constructor(private api: ApiPromise) { }
+
+    static async getInstance() {
+        if (!this.#instance) {
+            const httpProvider = new HttpProvider('https://rpc.polkadot.io');
+            const api = await ApiPromise.create({ provider: httpProvider });
+
+            this.#instance = new Polkadot(api);
+        }
+
+        return this.#instance;
+    }
 
     async getBalance(address: string): Promise<number> {
-        const { data } = await request.post(this.#url, {
-            jsonrpc: '2.0',
-            id: 1,
-            method: 'eth_getBalance',
-            params: [
-                address
-            ]
-        });
+        const planck = await this.getBalanceAsPlanck(address);
 
-        return parseInt(data.result, 16) / Math.pow(10, 18);
+        return planck * 0.0000000001;
+    }
+
+    async getBalanceAsPlanck(address: string): Promise<number> {
+        const response = await this.api.query.system.account(address);
+        const { data } = response.toJSON() as unknown as { data: { free: number } };
+
+        return data.free;
     }
 }
+

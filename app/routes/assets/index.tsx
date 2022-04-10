@@ -3,12 +3,13 @@ import { json, LoaderFunction, useLoaderData } from 'remix';
 import { Asset } from '../../components/assets/asset';
 import { firestore } from '../../lib/firebase/firebase.server';
 import { Asset as AssetType } from '../../components/assets/types';
-import { drivers } from '../../lib/chain/driver/driver';
+import { getDrivers } from '../../lib/chain/driver/driver';
 import { Coinmarketcap, Listing } from '../../lib/chain/coinmarketcap.server';
-import { client } from '../../lib/redis.server';
 import { withCache } from '../../lib/cache/helper';
 
 export const loader: LoaderFunction = async () => {
+    const drivers = await getDrivers();
+
     const coinmarketcap = Coinmarketcap.getInstance();
 
     const assets = await firestore.collection('assets').get();
@@ -56,13 +57,13 @@ export const loader: LoaderFunction = async () => {
 export default function Assets() {
     const { assets } = useLoaderData();
 
-    const [activeAccordions, setActiveAccordions] = useState<string[]>([]);
+    const [passiveAccordions, setPassiveAccordions] = useState<string[]>([]);
 
     const handleAccordionActivation = (id: string) => {
-        if (activeAccordions.includes(id)) {
-            setActiveAccordions(activeAccordions.filter(accordionId => accordionId !== id));
+        if (passiveAccordions.includes(id)) {
+            setPassiveAccordions(passiveAccordions.filter(accordionId => accordionId !== id));
         } else {
-            setActiveAccordions([...activeAccordions, id]);
+            setPassiveAccordions([...passiveAccordions, id]);
         }
     }
 
@@ -74,7 +75,7 @@ export default function Assets() {
                         <Asset
                             key={asset.id}
                             asset={asset}
-                            activeAccordions={activeAccordions}
+                            passiveAccordions={passiveAccordions}
                             handleAccordionActivation={handleAccordionActivation}
                         />
                     )
