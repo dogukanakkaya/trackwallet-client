@@ -5,7 +5,7 @@ import { firestore } from '../../lib/firebase/firebase.server';
 import { Asset as AssetType } from '../../components/assets/types';
 import { getDrivers } from '../../lib/chain/driver/driver';
 import { getUserFromRequest } from '../../lib/auth/user.server';
-import { api } from '../../lib/axios';
+import { api, SuccessResponse } from '../../lib/axios';
 
 export const loader: LoaderFunction = async ({ request }) => {
     const user = await getUserFromRequest(request);
@@ -14,7 +14,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
     const assets = await firestore.collection(`users/${user.uid}/assets`).get();
 
-    const { data: listings } = await api.get<Listing[]>('/cryptocurrencies/listings');
+    const { data: { data: listings } } = await api.get<SuccessResponse<Listing[]>>('/cryptocurrencies/listings');
 
     let totalBalance: Record<string, number> = {
         USD: 0
