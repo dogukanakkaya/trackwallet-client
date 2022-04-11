@@ -1,5 +1,5 @@
 import { ApiPromise, HttpProvider } from '@polkadot/api';
-import { request } from '../../request';
+import { request } from '../../axios';
 import { Driver } from './driver';
 
 export class Polkadot implements Driver {

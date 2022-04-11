@@ -1,4 +1,4 @@
-import { request } from '../../request';
+import { base } from '../../axios';
 import { Driver } from './driver';
 
 export class Avalanche implements Driver {
@@ -7,7 +7,7 @@ export class Avalanche implements Driver {
     }
 
     async getBalance(address: string): Promise<number> {
-        const { data } = await request.post(this.#urls.c, {
+        const { data } = await base.post(this.#urls.c, {
             jsonrpc: '2.0',
             id: 1,
             method: 'eth_getBalance',

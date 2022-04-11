@@ -1,4 +1,4 @@
-import { request } from '../../request';
+import { base } from '../../axios';
 import { Driver } from './driver';
 
 export class Solana implements Driver {
@@ -11,7 +11,7 @@ export class Solana implements Driver {
     }
 
     async getBalanceAsLamport(address: string): Promise<number> {
-        const { data } = await request.post(this.#url, [
+        const { data } = await base.post(this.#url, [
             {
                 jsonrpc: '2.0',
                 id: 1,

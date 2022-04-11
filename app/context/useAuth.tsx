@@ -8,7 +8,7 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { request } from '../lib/request';
+import { base } from '../lib/axios';
 
 export interface User {
     name: string;
@@ -38,7 +38,7 @@ export const AuthProvider = (props: ContextProps) => {
                 if (authUser) {
                     const token = await authUser.getIdToken();
 
-                    const { data } = await request.post('https://127.0.0.1:3000/api/auth/login', {
+                    const { data } = await base.post('https://127.0.0.1:3000/api/auth/login', {
                         token
                     }, {
                         withCredentials: true

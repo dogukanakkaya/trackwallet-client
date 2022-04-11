@@ -1,4 +1,4 @@
-import { request } from '../../request';
+import { base } from '../../axios';
 import { Driver } from './driver';
 
 export class IOTA implements Driver {
@@ -11,7 +11,7 @@ export class IOTA implements Driver {
     }
 
     async getBalanceAsIota(address: string): Promise<number> {
-        const { data } = await request.get(`${this.#url}/addresses/${address}`);
+        const { data } = await base.get(`${this.#url}/addresses/${address}`);
 
         return data.data.balance;
     }

@@ -4,20 +4,17 @@ import { Asset } from '../../components/assets/asset';
 import { firestore } from '../../lib/firebase/firebase.server';
 import { Asset as AssetType } from '../../components/assets/types';
 import { getDrivers } from '../../lib/chain/driver/driver';
-import { Coinmarketcap, Listing } from '../../lib/chain/coinmarketcap.server';
-import { withCache } from '../../lib/cache/helper';
 import { getUserFromRequest } from '../../lib/auth/user.server';
+import { api } from '../../lib/axios';
 
 export const loader: LoaderFunction = async ({ request }) => {
     const user = await getUserFromRequest(request);
 
     const drivers = await getDrivers();
 
-    const coinmarketcap = Coinmarketcap.getInstance();
-
     const assets = await firestore.collection(`users/${user.uid}/assets`).get();
 
-    const listings = await withCache<Listing[]>('cryptocurrency_listings', () => coinmarketcap.getListings(), { EX: 60 * 60 * 1 });
+    const { data: listings } = await api.get<Listing[]>('/cryptocurrencies/listings');
 
     let totalBalance: Record<string, number> = {
         USD: 0
@@ -92,4 +89,43 @@ export default function Assets() {
             </div>
         </>
     )
+}
+
+export interface Listing {
+    id: number;
+    name: string;
+    symbol: string;
+    slug: string;
+    num_market_pairs: number;
+    date_added: Date;
+    tags: string[];
+    max_supply?: number;
+    circulating_supply: number;
+    total_supply: number;
+    platform: {
+        id: number;
+        name: string;
+        symbol: string;
+        slug: string;
+        token_address: string;
+    };
+    cmc_rank: number;
+    self_reported_circulating_supply?: number;
+    self_reported_market_cap?: number;
+    last_updated: Date;
+    quote: Record<string, {
+        price: number;
+        volume_24h: number;
+        volume_change_24h: number;
+        percent_change_1h: number;
+        percent_change_24h: number;
+        percent_change_7d: number;
+        percent_change_30d: number;
+        percent_change_60d: number;
+        percent_change_90d: number;
+        market_cap: number;
+        market_cap_dominance: number;
+        fully_diluted_market_cap: number;
+        last_updated: Date;
+    }>
 }
