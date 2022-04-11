@@ -14,7 +14,11 @@ export const loader: LoaderFunction = async ({ request }) => {
 
     const assets = await firestore.collection(`users/${user.uid}/assets`).get();
 
-    const { data: { data: listings } } = await api.get<SuccessResponse<Listing[]>>('/market/listings');
+    const { data: { data: listings } } = await api.get<SuccessResponse<Listing[]>>('/market/listings', {
+        headers: {
+            'Cookie': request.headers.get('Cookie') || '',
+        }
+    });
 
     let totalBalance: Record<string, number> = {
         USD: 0

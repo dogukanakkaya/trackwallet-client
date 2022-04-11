@@ -1,10 +1,12 @@
-import { auth as authCookie } from '../cookie';
-import { auth } from '../firebase/firebase.server';
+import { api } from '../axios';
 
 // maybe cache the user object
 export const getUserFromRequest = async (request: Request) => {
-    const cookieHeader = request.headers.get("Cookie");
-    const cookies = await authCookie.parse(cookieHeader) || {};
+    const { data: { data: user } } = await api.get('/auth/verify', {
+        headers: {
+            'Cookie': request.headers.get('Cookie') || '',
+        }
+    });
 
-    return auth.verifySessionCookie(cookies.token, true);
+    return user;
 }
