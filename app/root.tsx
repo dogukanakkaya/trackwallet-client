@@ -14,6 +14,7 @@ import styles from "./styles/tailwind.css"
 import { AuthProvider } from "./context/useAuth";
 import { Header } from './components/header';
 import { getUserFromRequest } from './lib/auth/user.server';
+import { API_GATEWAY_URL } from './config.server';
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
@@ -26,25 +27,26 @@ export const meta: MetaFunction = () => ({
 });
 
 export const loader: LoaderFunction = async ({ request }) => {
-  try {
-    const user = await getUserFromRequest(request);
+  let user = null;
 
-    return json({ user });
+  try {
+    user = await getUserFromRequest(request);
   } catch (err) {
     // cookie expired or any other error (reset the cookie)
-    // todo: later i might need to delete only auth cookie and keep others
-    return json({
-      user: null
-    }, {
-      headers: {
-        'Set-Cookie': ''
-      }
-    })
   }
+
+  return json({
+    user,
+    env: {
+      API_GATEWAY_URL
+    }
+  }, {
+
+  });
 }
 
 export default function App() {
-  const { user } = useLoaderData();
+  const { user, env } = useLoaderData();
 
   return (
     <html lang="en">
@@ -58,6 +60,11 @@ export default function App() {
           <Outlet />
         </AuthProvider>
         <ScrollRestoration />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.env = ${JSON.stringify(env)}`,
+          }}
+        />
         <Scripts />
         <LiveReload />
       </body>
