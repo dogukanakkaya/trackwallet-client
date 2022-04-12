@@ -11,14 +11,14 @@ export const loader: LoaderFunction = async ({ request }) => {
     const user = await getUserFromRequest(request);
 
     if (!user) {
-        return redirect("/");
+        return redirect('/');
     }
 
     const drivers = await getDrivers();
 
     const assets = await firestore.collection(`users/${user.uid}/assets`).get();
 
-    const { data: { data: listings } } = await api.get<SuccessResponse<Listing[]>>('/market/listings', {
+    const { data: { data: { listings } } } = await api.get<SuccessResponse<{ listings: Listing[] }>>('/market/listings', {
         headers: {
             'Cookie': request.headers.get('Cookie') || '',
         }

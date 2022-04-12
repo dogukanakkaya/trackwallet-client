@@ -40,13 +40,16 @@ export const AuthProvider = (props: ContextProps) => {
 
                     // todo: fix this problem, axios's base url is server side only
                     // so when client makes a request to login base url is not included
-                    const { data } = await api.post('https://127.0.0.1:8080/api/v1/auth/login', {
-                        token
-                    }, {
-                        withCredentials: true
-                    });
-
-                    setUser('data' in data ? data.data : null);
+                    try {
+                        const { data: { data } } = await api.post('https://127.0.0.1:8080/api/v1/auth/login', {
+                            token
+                        }, {
+                            withCredentials: true
+                        });
+                        setUser(data.user);
+                    } catch (_) {
+                        setUser(null);
+                    }
                 }
             });
 

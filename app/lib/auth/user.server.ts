@@ -2,14 +2,14 @@ import { api } from '../axios';
 
 export const getUserFromRequest = async (request: Request) => {
     try {
-        const { data: { data: user } } = await api.get('/auth/verify', {
+        const { data: { data } } = await api.get('/auth/verify', {
             headers: {
                 'Cookie': request.headers.get('Cookie') || '',
             }
         });
 
-        return user;
-    } catch (_) {
+        return data.user;
+    } catch (err) {
         return null;
     }
 }
