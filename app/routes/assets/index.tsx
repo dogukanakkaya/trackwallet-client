@@ -3,7 +3,6 @@ import { json, LoaderFunction, redirect, useLoaderData } from 'remix';
 import { Asset } from '../../components/assets/asset';
 import { firestore } from '../../lib/firebase/firebase.server';
 import { Asset as AssetType } from '../../components/assets/types';
-import { getDrivers } from '../../lib/chain/driver/driver';
 import { getUserFromRequest } from '../../lib/auth/user.server';
 import { api, SuccessResponse } from '../../lib/axios';
 
@@ -14,8 +13,6 @@ export const loader: LoaderFunction = async ({ request }) => {
         return redirect('/');
     }
 
-    const drivers = await getDrivers();
-
     const assets = await firestore.collection(`users/${user.uid}/assets`).get();
 
     const { data: { data: { listings } } } = await api.get<SuccessResponse<{ listings: Listing[] }>>('/market/listings', {
@@ -24,9 +21,7 @@ export const loader: LoaderFunction = async ({ request }) => {
         }
     });
 
-    let totalBalance: Record<string, number> = {
-        USD: 0
-    };
+    let totalBalance: Record<string, number> = { USD: 0 };
 
     const mappedAssets = assets.docs.map(async assetDoc => {
         const asset = assetDoc.data();
@@ -37,9 +32,14 @@ export const loader: LoaderFunction = async ({ request }) => {
             wallets.docs.map(async walletDoc => {
                 const wallet = walletDoc.data();
 
+                // start each request in parallel for more perf
+                const { data: cryptoBalance } = await api.get<SuccessResponse<{ balance: number }>>(`/crypto/${asset.slug}/balance/${wallet.address}`, {
+                    headers: {
+                        'Cookie': request.headers.get('Cookie') || '',
+                    }
+                });
                 let balance: Record<string, number> = {
-                    // start each request in parallel for more perf
-                    [asset.currency]: await drivers[asset.currency]?.getBalance(wallet.address) || 0
+                    [asset.currency]: cryptoBalance.data.balance,
                 };
                 balance.USD = balance[asset.currency] * (listings.find(listing => listing.symbol === asset.currency)?.quote?.USD.price || 0)
                 totalBalance.USD += balance.USD;

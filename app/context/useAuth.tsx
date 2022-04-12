@@ -38,10 +38,8 @@ export const AuthProvider = (props: ContextProps) => {
                 if (authUser) {
                     const token = await authUser.getIdToken();
 
-                    // todo: fix this problem, axios's base url is server side only
-                    // so when client makes a request to login base url is not included
                     try {
-                        const { data: { data } } = await api.post('https://127.0.0.1:8080/api/v1/auth/login', {
+                        const { data: { data } } = await api.post('/auth/login', {
                             token
                         }, {
                             withCredentials: true
