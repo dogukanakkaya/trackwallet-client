@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { json, LoaderFunction, useLoaderData } from 'remix';
+import { json, LoaderFunction, redirect, useLoaderData } from 'remix';
 import { Asset } from '../../components/assets/asset';
 import { firestore } from '../../lib/firebase/firebase.server';
 import { Asset as AssetType } from '../../components/assets/types';
@@ -9,6 +9,10 @@ import { api, SuccessResponse } from '../../lib/axios';
 
 export const loader: LoaderFunction = async ({ request }) => {
     const user = await getUserFromRequest(request);
+
+    if (!user) {
+        return redirect("/");
+    }
 
     const drivers = await getDrivers();
 

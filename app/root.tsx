@@ -27,13 +27,7 @@ export const meta: MetaFunction = () => ({
 });
 
 export const loader: LoaderFunction = async ({ request }) => {
-  let user = null;
-
-  try {
-    user = await getUserFromRequest(request);
-  } catch (err) {
-    // cookie expired or any other error (reset the cookie)
-  }
+  const user = await getUserFromRequest(request);
 
   return json({
     user,
