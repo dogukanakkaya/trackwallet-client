@@ -13,7 +13,7 @@ export const loader: LoaderFunction = async ({ request }) => {
         return redirect('/');
     }
 
-    const assets = await firestore.collection(`users/${user.uid}/assets`).get();
+    const assets = await firestore.collection(`users/${user.id}/assets`).get();
 
     const { data: { data: { listings } } } = await api.get<SuccessResponse<{ listings: Listing[] }>>('/market/listings', {
         headers: {
