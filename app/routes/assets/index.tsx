@@ -15,6 +15,8 @@ export const loader: LoaderFunction = async ({ request }) => {
 
     const assets = await firestore.collection(`users/${user.id}/assets`).get();
 
+    // todo: there are some other places that i have to send cookie
+    // try to add cookie for each request from the server too like withCredentials true
     const { data: { data: { listings } } } = await api.get<SuccessResponse<{ listings: Listing[] }>>('/market/listings', {
         headers: {
             'Cookie': request.headers.get('Cookie') || '',
@@ -104,36 +106,15 @@ export interface Listing {
     name: string;
     symbol: string;
     slug: string;
-    num_market_pairs: number;
-    date_added: Date;
-    tags: string[];
     max_supply?: number;
     circulating_supply: number;
     total_supply: number;
-    platform: {
-        id: number;
-        name: string;
-        symbol: string;
-        slug: string;
-        token_address: string;
-    };
-    cmc_rank: number;
-    self_reported_circulating_supply?: number;
-    self_reported_market_cap?: number;
-    last_updated: Date;
     quote: Record<string, {
         price: number;
         volume_24h: number;
         volume_change_24h: number;
-        percent_change_1h: number;
         percent_change_24h: number;
-        percent_change_7d: number;
-        percent_change_30d: number;
-        percent_change_60d: number;
-        percent_change_90d: number;
         market_cap: number;
         market_cap_dominance: number;
-        fully_diluted_market_cap: number;
-        last_updated: Date;
     }>
 }
