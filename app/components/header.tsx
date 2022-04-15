@@ -1,5 +1,5 @@
 import useAuth from '../context/useAuth'
-import { auth } from '../lib/firebase/firebase';
+import { auth } from '../lib/firebase';
 import { GoogleAuthProvider, signInWithPopup, AuthProvider } from 'firebase/auth';
 import logo from '../logo.png';
 

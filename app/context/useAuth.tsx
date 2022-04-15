@@ -1,5 +1,5 @@
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../lib/firebase/firebase';
+import { auth } from '../lib/firebase';
 import {
     createContext,
     ReactNode,
@@ -34,6 +34,8 @@ export const AuthProvider = (props: ContextProps) => {
 
     useEffect(() => {
         if (!user) {
+            // logout first because the token in the server might expired
+            // so the user must login again
             const subscribe = onAuthStateChanged(auth, async (authUser) => {
                 if (authUser) {
                     const token = await authUser.getIdToken();

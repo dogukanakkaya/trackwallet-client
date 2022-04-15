@@ -6,8 +6,9 @@ export interface Wallet {
 
 export interface Asset {
     id: string;
+    wallets: Wallet[];
     name: string;
     slug: string;
     currency: string;
-    wallets?: Wallet[];
+    createdAt: Date;
 }
