@@ -12,16 +12,8 @@ export const loader: LoaderFunction = async ({ request }) => {
         return redirect('/');
     }
 
-    // todo: there are some other places that i have to send cookie
-    // try to add cookie for each request from the server too like withCredentials true
-    const requestConfig = {
-        headers: {
-            'Cookie': request.headers.get('Cookie') || ''
-        }
-    };
-
-    const { data: { data: { assets } } } = await api.get<SuccessResponse<{ assets: AssetType[] }>>('/user/assets', requestConfig);
-    const { data: { data: { listings } } } = await api.get<SuccessResponse<{ listings: Listing[] }>>('/market/listings', requestConfig);
+    const { data: { data: { assets } } } = await api.get<SuccessResponse<{ assets: AssetType[] }>>('/user/assets');
+    const { data: { data: { listings } } } = await api.get<SuccessResponse<{ listings: Listing[] }>>('/market/listings');
 
     const totalBalance: Record<string, number> = { USD: 0 };
 

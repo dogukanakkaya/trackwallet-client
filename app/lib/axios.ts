@@ -11,16 +11,8 @@ const api = axios.create({
   withCredentials: true
 });
 
-const base = axios.create({
-  headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json'
-  }
-});
-
 export {
-  api,
-  base
+  api
 }
 
 export interface SuccessResponse<T> {

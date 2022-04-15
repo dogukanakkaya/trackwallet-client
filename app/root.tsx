@@ -15,6 +15,7 @@ import { AuthProvider } from "./context/useAuth";
 import { Header } from './components/header';
 import { getUserFromRequest } from './lib/auth/user.server';
 import { API_GATEWAY_URL } from './config.server';
+import { api } from './lib/axios';
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
@@ -27,6 +28,14 @@ export const meta: MetaFunction = () => ({
 });
 
 export const loader: LoaderFunction = async ({ request }) => {
+  api.interceptors.request.use((config) => {
+    if (config.headers) {
+      config.headers['Cookie'] = request.headers.get('Cookie') || '';
+    }
+
+    return config;
+  });
+
   const user = await getUserFromRequest(request);
 
   return json({
