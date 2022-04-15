@@ -19,15 +19,11 @@ export const loader: LoaderFunction = async ({ request }) => {
 
     for (const asset of assets) {
         for (const wallet of asset.wallets) {
-            const { data: cryptoBalance } = await api.get<SuccessResponse<{ balance: number }>>(`/crypto/${asset.slug}/balance/${wallet.address}`, {
-                headers: {
-                    'Cookie': request.headers.get('Cookie') || '',
-                }
-            });
-            let balance: Record<string, number> = {
-                [asset.currency]: cryptoBalance.data.balance,
+            const { data: cryptoBalance } = await api.get<SuccessResponse<{ balance: number }>>(`/crypto/${asset.slug}/balance/${wallet.address}`);
+            const balance: Record<string, number> = {
+                [asset.currency]: cryptoBalance.data.balance
             };
-            balance.USD = balance[asset.currency] * (listings.find(listing => listing.symbol === asset.currency)?.quote?.USD.price || 0)
+            balance.USD = balance[asset.currency] * (listings.find(listing => listing.symbol === asset.currency)?.quote?.USD.price || 0);
             totalBalance.USD += balance.USD;
 
             wallet.balance = balance;
