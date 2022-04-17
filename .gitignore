@@ -8,5 +8,4 @@ node_modules
 /app/styles/**/*
 local_ssl
 
-serviceAccountKey.json
 *.rest
