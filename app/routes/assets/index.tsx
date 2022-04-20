@@ -21,7 +21,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
     const totalBalance: Record<string, number> = { USD: 0 };
 
-    // todo: perf, run these in parallel
+    // todo: perf, run these in parallel (multiple wallets of an asset should be a batch request, it will be implemented in crypto-service)
     for (const asset of assets) {
         for (const wallet of asset.wallets) {
             const { data: cryptoBalance } = await api.get<SuccessResponse<{ balance: number }>>(`/crypto/${asset.slug}/balance/${wallet.address}`);
