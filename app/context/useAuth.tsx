@@ -10,6 +10,7 @@ import {
 } from 'react';
 import { api } from '../lib/axios';
 
+// todo: legacy interface, replace this with the new one from auth service
 export interface User {
     name: string;
     picture: string;
@@ -34,8 +35,6 @@ export const AuthProvider = (props: ContextProps) => {
 
     useEffect(() => {
         if (!user) {
-            // logout first because the token in the server might expired
-            // so the user must login again
             const subscribe = onAuthStateChanged(auth, async (authUser) => {
                 if (authUser) {
                     const token = await authUser.getIdToken();
