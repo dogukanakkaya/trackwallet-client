@@ -4,5 +4,5 @@
 npm run dev
 ```
 
-## API:
+## API
 https://github.com/dogukanakkaya/trackwallet-api-gateway
