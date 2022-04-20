@@ -12,11 +12,16 @@ export const loader: LoaderFunction = async ({ request }) => {
         return redirect('/');
     }
 
-    const { data: { data: { assets } } } = await api.get<SuccessResponse<{ assets: AssetType[] }>>('/user/assets');
-    const { data: { data: { listings } } } = await api.get<SuccessResponse<{ listings: Listing[] }>>('/market/listings');
+    const responses = await Promise.all([
+        api.get<SuccessResponse<{ assets: AssetType[] }>>('/user/assets'),
+        api.get<SuccessResponse<{ listings: Listing[] }>>('/market/listings')
+    ]);
+    const assets = responses[0].data.data.assets;
+    const listings = responses[1].data.data.listings;
 
     const totalBalance: Record<string, number> = { USD: 0 };
 
+    // todo: perf, run these in parallel
     for (const asset of assets) {
         for (const wallet of asset.wallets) {
             const { data: cryptoBalance } = await api.get<SuccessResponse<{ balance: number }>>(`/crypto/${asset.slug}/balance/${wallet.address}`);
